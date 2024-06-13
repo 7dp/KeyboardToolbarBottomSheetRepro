@@ -6,6 +6,7 @@ import {
   Platform,
   SafeAreaView,
   StyleSheet,
+  Text,
   TextInput,
   View,
 } from 'react-native';
@@ -30,6 +31,7 @@ function App(): React.JSX.Element {
             contentContainerStyle={styles.kasContentContainer}
             keyboardShouldPersistTaps="handled"
             bottomOffset={keyboardBottomOffset}>
+            <Text style={styles.title}>Reproduction</Text>
             {Array(10)
               .fill('')
               .map((_item, index) => (
@@ -79,6 +81,11 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   kasContentContainer: {flexGrow: 1, gap: 24, padding: 24},
+  title: {
+    color: 'black',
+    fontSize: 20,
+    fontWeight: '600',
+  },
 });
 
 export default App;
