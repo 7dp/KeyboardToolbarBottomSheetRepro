@@ -1,118 +1,84 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React from 'react';
-import type {PropsWithChildren} from 'react';
+// @refresh reset
+import RNBottomSheet, {BottomSheetTextInput} from '@gorhom/bottom-sheet';
+import React, {useRef} from 'react';
 import {
+  Button,
+  Platform,
   SafeAreaView,
-  ScrollView,
-  StatusBar,
   StyleSheet,
-  Text,
-  useColorScheme,
+  TextInput,
   View,
 } from 'react-native';
-
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+  KeyboardAwareScrollView,
+  KeyboardProvider,
+  KeyboardToolbar,
+} from 'react-native-keyboard-controller';
+import {BottomSheet} from './BottomSheet';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+const keyboardBottomOffset = Platform.OS === 'ios' ? 70 : 32;
 
 function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+  const sheetRef = useRef<RNBottomSheet>(null);
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <GestureHandlerRootView style={styles.flex}>
+      <KeyboardProvider>
+        <SafeAreaView style={[styles.background, styles.flex]}>
+          <KeyboardAwareScrollView
+            contentContainerStyle={styles.kasContentContainer}
+            keyboardShouldPersistTaps="handled"
+            bottomOffset={keyboardBottomOffset}>
+            {Array(10)
+              .fill('')
+              .map((_item, index) => (
+                <TextInput
+                  key={index}
+                  placeholderTextColor="lightgray"
+                  placeholder="Type here..."
+                  style={styles.input}
+                />
+              ))}
+            <Button
+              title="Open Sheet"
+              onPress={() => {
+                sheetRef.current?.expand();
+              }}
+            />
+          </KeyboardAwareScrollView>
+          <KeyboardToolbar />
+          <BottomSheet ref={sheetRef}>
+            <View style={styles.container}>
+              <BottomSheetTextInput
+                placeholderTextColor="lightgray"
+                placeholder="Type here..."
+                style={styles.input}
+              />
+            </View>
+          </BottomSheet>
+        </SafeAreaView>
+      </KeyboardProvider>
+    </GestureHandlerRootView>
   );
 }
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  flex: {flex: 1},
+  background: {backgroundColor: 'white'},
+  input: {
+    color: 'black',
+    borderColor: 'darkgray',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 10,
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  container: {
+    justifyContent: 'center',
+    height: 200,
+    padding: 24,
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
+  kasContentContainer: {flexGrow: 1, gap: 24, padding: 24},
 });
 
 export default App;
